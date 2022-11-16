@@ -5,9 +5,12 @@ import Axios from "axios"
 const VentasScreen = () => {
 
     const [idVenta, setIdVenta] = useState("")
+    const [idmessage, setIdmessage] = useState('');
     const [zonaVenta, setZonaVenta] = useState("")
     const [fechaVenta, setFechaVenta] = useState("")
     const [valorVenta, setValorVenta] = useState("")
+    const [titularmessage, setTitularmessage] = useState('')
+    const [valorMinimo, setValorMinimo] = useState('')
     const [vendedores, setVendedores] = useState([])
     const [ventas, setVentas] = useState([])
   
@@ -22,21 +25,52 @@ const VentasScreen = () => {
         setVentas(response.data)
       })
     }, [])
+
+    const validacionID = () => {
+      const regEx = /^[0-9]+$/
+      if(regEx.test(idVenta)){
+        setIdmessage('')
+        return true;
+        console.log("idtrue")
+      }
+      else{
+        setIdmessage("El ID solo admite numeros")
+        return false;
+        console.log("id")
+      }
+    }
   
+    const validacionValorVenta = () => {
+      if(valorVenta < 2000000){
+        setValorMinimo("El valor de la venta no puede ser menor de 2 (Dos) millones.")
+        return false
+      }
+      else{
+        setValorMinimo("")
+        return true
+      }
+    }
+
+    const validacionValor = () => {
+      const regEx = /^[0-9]+$/
+      if(regEx.test(valorVenta)){
+        setTitularmessage('')
+        return true;
+        console.log("idtrue")
+      }
+      else{
+        setTitularmessage("El valor de la venta solo admite numeros")
+        return false;
+        console.log("id")
+      }
+    }
   
     const enviarVenta = () => {
       if(vendedores.find(vendedor => vendedor.idVendedor == idVenta)){
         if(valorVenta >= 2000000){
             Axios.post('http://localhost:3001/api/insert/venta', {idVenta: idVenta, zonaVenta: zonaVenta, fechaVenta: fechaVenta, valorVenta: valorVenta}).then(() => {
-                setIdVenta("")
-                setZonaVenta("")
-                setFechaVenta("")
-                setValorVenta("")
-        })
-        }else{
-            alert("El valor de la venta no puede ser menor de 2 (Dos) Millones.")
+        }) 
         }
-        
       }else{
         alert("Este vendedor no se encuentra registrado.")
         
@@ -60,6 +94,7 @@ const VentasScreen = () => {
               <span class="field__label">Identificacion del vendedor</span>
             </span>
           </div>
+          <label class="alerta">{idmessage}</label>
           <div class="field field_v2">
             <label for="last-name" class="ha-screen-reader">Zona</label>
             <select class="field__input" onChange={(e) => {
@@ -91,12 +126,34 @@ const VentasScreen = () => {
               <span class="field__label">Valor de la venta</span>
             </span>
           </div>
+          <label class="alerta">{titularmessage}</label>
+          <label class="alerta">{valorMinimo}</label>
           <button type='submit' onClick={() => {
-            enviarVenta()
-            setIdVenta("")
-            setFechaVenta("")
-            setValorVenta("")
-            alert("Venta enviada con exito.")
+            validacionID()
+            validacionValor()
+            validacionValorVenta()
+             
+             if(validacionValor() == true){
+              if(validacionID() == true){
+                if(validacionValorVenta() == true){
+                  enviarVenta()
+                  setIdVenta("")
+                  setZonaVenta("")
+                  setFechaVenta("")
+                  setValorVenta("")
+
+                  alert("Venta enviada con exito.")
+                  window.location.reload()
+                }else{
+                  alert("Debes poner todos los datos correctamente.")
+                }
+              }else{
+                alert("Debes poner todos los datos correctamente")
+              }
+             }else{
+              alert("Debes poner todos los datos correctamente")
+             }
+              
           }} class="btn">Guardar venta</button>
         </div>
       </div>

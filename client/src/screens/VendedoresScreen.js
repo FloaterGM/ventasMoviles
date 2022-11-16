@@ -7,8 +7,9 @@ const VendedoresScreen = () => {
     const [idVendedor, setIdVendedor] = useState("")
     const [idmessage, setIdmessage] = useState('');
     const [nombreVendedor, setNombreVendedor] = useState("")
-    const [titularmessage, setTitularmessage] = useState('');
+    const [titularmessage, setTitularmessage] = useState('')
     const [emailVendedor, setEmailVendedor] = useState("")
+    const [emailMessage, setEmailMessage] = useState("")
     const [totalComisiones, setTotalComisiones] = useState(0)
     const [vendedores, setVendedores] = useState([])
     const [ventas, setVentas] = useState([])
@@ -78,6 +79,18 @@ const VendedoresScreen = () => {
           return false;
         }
       }
+
+      const ValidacionEmail = () => {
+        const regEx = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+        if(regEx.test(emailVendedor)){
+          setEmailMessage("")
+          return true;
+        }
+        else{
+          setEmailMessage("Debes poner un email valido.")
+          return false;
+        }
+      }
   
   
     const enviarVendedor = () => {
@@ -127,6 +140,7 @@ const VendedoresScreen = () => {
               <span class="field__label">Correo</span>
             </span>
           </div>
+          <label class="alerta">{emailMessage}</label>  
           <div class="field field_v3">
             <label for="email" class="ha-screen-reader">Comisiones</label>
             <input value={totalComisiones} id="email" class="field__input" disabled='True'/>
@@ -136,14 +150,24 @@ const VendedoresScreen = () => {
           </div>
           <button onClick={() => {
             if(idVendedor != "" && nombreVendedor != "" && emailVendedor != ""){
+                validacionID();
+                validacionTitular();
+                ValidacionEmail();
+                console.log(ValidacionEmail())
                 if(validacionID() == true){
                     if(validacionTitular() == true){
+                      if(ValidacionEmail() == true){
                         enviarVendedor()
-                        alert("Vendedor guardado con exito")
-                        setIdVendedor("")
-                        setNombreVendedor("")
-                        setEmailVendedor("")
-                        setTotalComisiones("")
+                          alert("Vendedor guardado con exito")
+                          window.location.reload()
+                          setIdVendedor("")
+                          setNombreVendedor("")
+                          setEmailVendedor("")
+                          setTotalComisiones("")
+                      }
+                      else{
+                        alert("No se puede enviar el vendedor si los campos no cumplen los requisitos")
+                      }
                     }
                     else{
                         alert("No se puede enviar el vendedor si los campos no cumplen los requisitos")
@@ -158,14 +182,12 @@ const VendedoresScreen = () => {
             }
           }} class="btn">Guardar vendedor</button>
           <button onClick={() => {
-            console.log(idVendedor)
-            console.log(nombreVendedor)
-            console.log(emailVendedor)
-            console.log(totalComisiones)
+
             consultarVendedor()
             
           }} class="btn">Consultar vendedor</button>
           <button onClick={() => {
+            window.location.reload()
             setIdVendedor("")
             setNombreVendedor("")
             setEmailVendedor("")
